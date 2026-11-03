@@ -30,8 +30,11 @@ class Player(pg.sprite.Sprite):
         if keys[pg.K_RIGHT] and self.rect.right < 800:
             self.rect.x += 8
 
-#追加機能3
+#追加機能3(C0A25119)
 class SpecialItem(pg.sprite.Sprite):
+    """
+    金のスペシャルアイテムを管理するクラス
+    """
     def init(self):
         super().init()
         self.image = pg.Surface((25, 25))
@@ -39,15 +42,24 @@ class SpecialItem(pg.sprite.Sprite):
         self.rect = self.image.get_rect(center=(random.randint(25, 775), 0))
         self.speed = random.randint(6, 10)
     def update(self):
+        """
+        アイテムの位置の更新,画面外に出たら消去
+        """
         self.rect.y += self.speed
         if self.rect.top > 600:
             self.kill()
 
 class SpecialManager:
+    """
+    スペシャルアイテムの生成・当たり判定・描画を統括するクラス
+    """
     def init(self):
         self.specials = pg.sprite.Group()
 
     def update(self, player):
+        """
+        ランダム生成とプレイヤーの当たり判定、獲得したボーナススコアを返す
+        """
         bonus = 0
         if random.randint(1, 300) == 1:
             self.specials.add(SpecialItem())
@@ -58,6 +70,9 @@ class SpecialManager:
         return bonus
     
     def draw(self, screen):
+        """
+        画面にスペシャルアイテム群を描画する
+        """
         self.specials.draw(screen)
 
 class Apple(pg.sprite.Sprite):

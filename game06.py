@@ -30,6 +30,36 @@ class Player(pg.sprite.Sprite):
         if keys[pg.K_RIGHT] and self.rect.right < 800:
             self.rect.x += 8
 
+#追加機能3
+class SpecialItem(pg.sprite.Sprite):
+    def init(self):
+        super().init()
+        self.image = pg.Surface((25, 25))
+        self.image.fill((255, 215, 0))
+        self.rect = self.image.get_rect(center=(random.randint(25, 775), 0))
+        self.speed = random.randint(6, 10)
+    def update(self):
+        self.rect.y += self.speed
+        if self.rect.top > 600:
+            self.kill()
+
+class SpecialManager:
+    def init(self):
+        self.specials = pg.sprite.Group()
+
+    def update(self, player):
+        bonus = 0
+        if random.randint(1, 300) == 1:
+            self.specials.add(SpecialItem())
+        self.specials.update()
+        caught = pg.sprite.spritecollide(player, self.specials, True)
+        for c in caught:
+            bonus += 50
+        return bonus
+    
+    def draw(self, screen):
+        self.specials.draw(screen)
+
 class Apple(pg.sprite.Sprite):
     def __init__(self):
         super().__init__()
@@ -56,6 +86,8 @@ def main():
     player = Player()
     all_sprites.add(player)
 
+    special_manager = SpecialManager() #追加機能3
+
     score = 0
     start_ticks = pg.time.get_ticks()
     game_duration = 60000 # 60秒
@@ -79,6 +111,8 @@ def main():
         # 2. 更新処理
         if seconds_left > 0:
             all_sprites.update()
+
+            score += special_manager.update(player) #追加機能3
             
             # アイテムのランダム生成
             if random.randint(1, 30) == 1:
@@ -97,6 +131,8 @@ def main():
         # 3. 描画処理
         screen.fill((240, 255, 240))
         all_sprites.draw(screen)
+
+        special_manager.draw(screen) #追加機能3
 
         # UI描画
         score_text = font.render(f"Score: {score}", True, (0, 0, 0))
